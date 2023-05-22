@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 
 function Monitor() {
-  
+
   const [data, setData] = useState([]);
   const location = useLocation();
   const emailFromProps = location.state && location.state.email; // Get email from props
@@ -12,21 +12,21 @@ function Monitor() {
   const { email: emailFromToken } = token ? jwt_decode(token) : {}; // Get email from token
 
   const email = emailFromProps || emailFromToken; // Use email from props if available, otherwise use email from token
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         console.log(email);
         const response = await axios.post('http://localhost:5000/getData', { email });
         setData(response.data.Collection);
-        console.log("response "+JSON.stringify(response.data.Collection));
+        console.log("response " + JSON.stringify(response.data.Collection));
       } catch (error) {
         console.error(error);
       }
     };
     fetchData();
   }, [email]);
-  
+
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const handleImageClick = (index) => {
@@ -42,7 +42,7 @@ function Monitor() {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(date).toLocaleDateString('en-US', options);
   };
-  
+
 
   return (
     <div className="flex items-center mx-3 justify-center bg-opacity-50  overflow-auto">
@@ -78,7 +78,7 @@ function Monitor() {
                   Builder Type
                 </th>
                 <th scope="col" class="px-6 py-3">
-                  Builder Age
+                  Building Age
                 </th>
                 <th scope="col" class="px-6 py-3">
                   Area
@@ -96,10 +96,19 @@ function Monitor() {
                   Status
                 </th>
                 <th scope="col" class="px-6 py-3">
+                  End Date
+                </th>
+                <th scope="col" class="px-6 py-3">
+                  Status
+                </th>
+                <th scope="col" class="px-6 py-3">
                   Bedroom
                 </th>
                 <th scope="col" class="px-6 py-3">
                   Bedroom Count
+                </th>
+                <th scope="col" class="px-6 py-3">
+                  Added Fields
                 </th>
                 <th scope="col" class="px-6 py-3">
                   Included Appliances
@@ -108,16 +117,29 @@ function Monitor() {
                   Utilities
                 </th>
                 <th scope="col" class="px-6 py-3">
-                  Parking
+                  Utilitie Included
+                </th>
+                <th scope="col" class="px-6 py-3">
+                  Extra Appliance Included
                 </th>
                 <th scope="col" class="px-6 py-3">
                   School
                 </th>
                 <th scope="col" class="px-6 py-3">
+                  School Distance
+                </th>
+
+                <th scope="col" class="px-6 py-3">
                   Market
                 </th>
                 <th scope="col" class="px-6 py-3">
+                  Market Distance
+                </th>
+                <th scope="col" class="px-6 py-3">
                   Community
+                </th>
+                <th scope="col" class="px-6 py-3">
+                  Community Distance
                 </th>
                 <th scope="col" class="px-6 py-3">
                   Pets Allowed
@@ -146,7 +168,7 @@ function Monitor() {
               </tr>
             </thead>
             <tbody>
-              {data.map((row,index) => (
+              {data.map((row, index) => (
                 <React.Fragment key={index}>
                   <tr class="border-b border-gray-200 ">
                     <td class="px-6 py-4 bg-gray-50 ">
@@ -161,9 +183,11 @@ function Monitor() {
                       {row.Zip_Code}
                     </td>
                     <td class="px-6 py-4">{row.State}</td>
-                    <td class="px-6 py-4 bg-gray-50 ">
+                    {/* <td class="px-6 py-4 bg-gray-50 ">
                       {row.property_Description}
-                    </td>
+                    </td> */}
+                    <td className="px-6 py-4 bg-gray-50" dangerouslySetInnerHTML={{ __html: row.property_Description }}></td>
+
                     <td class="px-6 py-4">{row.Builder_Type}</td>
                     <td class="px-6 py-4 bg-gray-50 ">
                       {row.Age_of_Builder}
@@ -173,38 +197,91 @@ function Monitor() {
                       {row.Parking_Type}
                     </td>
                     <td class="px-6 py-4">{row.Title}</td>
-                    <td class="px-6 py-4 bg-gray-50 ">
-                      {new Date(row.Date).toLocaleDateString()}
+
+                    <td className="px-6 py-4 bg-gray-50">
+                      {row.Date && row.Date.map((object) => (
+                        <ul key={object}>
+                          <li className="list-disc">{object && new Date(object).toLocaleDateString()}</li>
+                        </ul>
+                      ))}
                     </td>
-                    <td class="px-6 py-4">{row.Status}</td>
+
+                    <td class="px-6 py-4 bg-gray-50 ">{row.Status.map((objects) => (
+                      <ul key={objects}>
+                        <li className="list-disc">{objects}</li>
+                      </ul>
+                    ))}</td>
+                    <td className="px-6 py-4 bg-gray-50">
+                      {row.EndDate && row.EndDate.map((object) => (
+                        <ul key={object}>
+                          <li className="list-disc">{object && new Date(object).toLocaleDateString()}</li>
+                        </ul>
+                      ))}
+                    </td>
+
+                    <td class="px-6 py-4 bg-gray-50 ">{row.status.map((objects) => (
+                      <ul key={objects}>
+                        <li className="list-disc">{objects}</li>
+                      </ul>
+                    ))}</td>
                     <td class="px-6 py-4 bg-gray-50 ">
                       {row.Bedroom}
                     </td>
                     <td class="px-6 py-4 ">{row.Bedrooms}</td>
-                    <td class="px-6 py-4 bg-gray-50 ">
-                      {row.Appliance_Include.map((objects)=>(
-                        <ul>
-                          <li>{objects}</li>
+                    <td className="px-6 py-4 bg-gray-50">
+                      {row.AddedFields.map((object) => {
+                        const [key, value] = object.split(':');
+                        return (
+                          <ul key={key} className="flex">
+                            <li className="flex items-center">
+                              <strong className="text-dark pr-2">{key.trim()}</strong>:
+                              <span className="text-light pl-2">{value.trim()}</span>
+                            </li>
+                          </ul>
+                        );
+                      })}
+                    </td>
+
+                    <td className="px-6 py-4 bg-gray-50">
+                      {row.Appliance_Include.map((object) => (
+                        <ul key={object}>
+                          <li className="list-disc">{object}</li>
                         </ul>
                       ))}
                     </td>
-                    <td class="px-6 py-4 ">{row.Utilies.map((objects) => (
-                      <ul>
-                        <li>{objects}</li>
+
+                    <td class="px-6 py-4 bg-gray-50 ">{row.Utilies.map((objects) => (
+                      <ul key={objects}>
+                        <li className="list-disc">{objects}</li>
                       </ul>
                     ))}</td>
+                    <td class="px-6 py-4 bg-gray-50 ">{row.Utilies_Include.map((objects) => (
+                      <ul key={objects}>
+                        <li className="list-disc">{objects}</li>
+                      </ul>
+                    ))}</td>
+
                     <td class="px-6 py-4 bg-gray-50 ">
-                      {row.Parking}
+                      {row.ExtraAppliance_Include.map((objects) => (
+                        <ul key={objects}>
+                          <li className="list-disc">{objects}</li>
+                        </ul>
+                      ))}
                     </td>
-                    <td class="px-6 py-4 ">{row.School}</td>
+
+                    <td class="px-6 py-4 bg-gray-50 ">{row.School}</td>
+                    <td class="px-6 py-4 ">{row.SchoolDistance}</td>
                     <td class="px-6 py-4 bg-gray-50 ">
                       {row.Market}
                     </td>
-                    <td class="px-6 py-4 ">{row.Community}</td>
+                    <td class="px-6 py-4 ">{row.MarketDistance}</td>
+                    <td class="px-6 py-4 bg-gray-50 ">{row.Community}</td>
+                    <td class="px-6 py-4 ">{row.CommunityDistance}</td>
                     <td class="px-6 py-4 bg-gray-50 ">
                       {row.Pets_alloed}
                     </td>
-                    <td class="px-6 py-4 ">{row.Rentals}</td>
+                    <td class="px-6 py-4 ">
+                      {row.Rentals}</td>
                     <td class="px-6 py-4 bg-gray-50 ">
                       {row.Latitude}
                     </td>
@@ -233,7 +310,7 @@ function Monitor() {
             </tbody>
           </table>
           {selectedImageIndex !== null && (
-            
+
             <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
               <Modal
                 images={data[selectedIndex].Image_url}
@@ -258,7 +335,7 @@ const Modal = ({ images, onClose }) => {
 
   const handleNext = () => {
     setCurrentImageIndex((prevIndex) =>
-    images.length > 0 && (prevIndex < images.length - 1 ? prevIndex + 1 : 0)
+      images.length > 0 && (prevIndex < images.length - 1 ? prevIndex + 1 : 0)
     );
   };
 
